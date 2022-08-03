@@ -510,6 +510,7 @@ static int fscript_object_set_prop(lua_State* L) {
   tk_object_t* obj = *(tk_object_t**)lua_touserdata(L, 1);
   const char* name = (const char*)luaL_checkstring(L, 2);
 
+  value_set_int(&v, 0);
   tvalue_to_value(L, 3, &v);
   tk_object_set_prop(obj, name, &v);
 
@@ -629,7 +630,6 @@ static ret_t fscript_return_to_lua(lua_State* L, value_t* v) {
     case VALUE_TYPE_OBJECT: {
       tk_object_t* obj = value_object(v);
       fscript_object_return(L, obj);
-      value_reset(v);
       break;
     }
     default: {
@@ -639,6 +639,7 @@ static ret_t fscript_return_to_lua(lua_State* L, value_t* v) {
       break;
     }
   }
+  value_reset(v);
 
   return RET_OK;
 }
@@ -675,10 +676,10 @@ static int fscript_call(lua_State* L, fscript_func_t func) {
     tvalue_to_value(L, i, v);
   }
 
+  value_set_int(&result, 0);
   func(fscript, &args, &result);
 
   fscript_return_to_lua(L, &result);
-  value_reset(&result);
 
   if (args.args != args_values) {
     TKMEM_FREE(args.args);
