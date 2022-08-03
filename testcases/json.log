@@ -1,0 +1,17 @@
+{
+    "results" : [
+        {
+            "location" : {
+                "id" : "WS0E9D8WN298",
+                "name" : "GuangZhou"
+            },
+            "now" : {
+                "code" : "9",
+                "temperature" : "30"
+            },
+            "last_update" : "2022-04-28T14:50:00+08:00"
+        }
+    ],
+    "name" : "fscript",
+    "age" : 100
+}
