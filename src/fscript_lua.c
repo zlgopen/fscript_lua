@@ -570,6 +570,37 @@ static void fscript_object_init(lua_State* L, tk_object_t* obj, const char* type
   return;
 }
 
+typedef struct _object_value_t {
+  tk_object_t object;
+  value_t value;
+} object_value_t;
+
+static ret_t object_value_on_destroy(tk_object_t* obj) {
+  object_value_t* o = (object_value_t*)(obj);
+  value_reset(&(o->value));
+  return RET_OK;
+}
+
+static const object_vtable_t s_object_value_vtable = {.type = "object_value",
+                                                      .desc = "object_value",
+                                                      .size = sizeof(object_value_t),
+                                                      .is_collection = FALSE,
+                                                      .on_destroy = object_value_on_destroy};
+
+tk_object_t* object_value_create(value_t* v) {
+  tk_object_t* o = NULL;
+  object_value_t* wrapper = NULL;
+  return_value_if_fail(v != NULL, NULL);
+  o = tk_object_create(&s_object_value_vtable);
+  return_value_if_fail(o != NULL, NULL);
+
+  wrapper = (object_value_t*)(o);
+  return_value_if_fail(wrapper != NULL, NULL);
+  wrapper->value = *v;
+
+  return o;
+}
+
 static ret_t tvalue_to_value(lua_State* L, int32_t i, value_t* v) {
   TValue* o = luaL_getarg(L, i);
 
@@ -583,7 +614,12 @@ static ret_t tvalue_to_value(lua_State* L, int32_t i, value_t* v) {
     *v = *(value_t*)lua_touserdata(L, i);
   } else if (ttisfulluserdata(o)) {
     tk_object_t* obj = *(tk_object_t**)lua_touserdata(L, i);
-    value_set_object(v, obj);
+    if (obj->vt == &s_object_value_vtable) {
+      object_value_t* ov = (object_value_t*)obj;
+      value_copy(v, &(ov->value));
+    } else {
+      value_set_object(v, obj);
+    }
   } else if (ttisboolean(o)) {
     value_set_bool(v, lua_toboolean(L, i));
   } else {
@@ -625,21 +661,30 @@ static ret_t fscript_return_to_lua(lua_State* L, value_t* v) {
     }
     case VALUE_TYPE_STRING: {
       lua_pushstring(L, value_str(v));
+      value_reset(v);
       break;
     }
     case VALUE_TYPE_OBJECT: {
       tk_object_t* obj = value_object(v);
       fscript_object_return(L, obj);
+      value_reset(v);
       break;
     }
     default: {
-      value_t* nv = lua_newuserdata(L, sizeof(value_t));
-      *nv = *v;
-      lua_pushlightuserdata(L, nv);
+      if (v->free_handle) {
+        tk_object_t* obj = object_value_create(v);
+        return_value_if_fail(obj != NULL, RET_OOM);
+        fscript_object_return(L, obj);
+        TK_OBJECT_UNREF(obj);
+      } else {
+        value_t* nv = lua_newuserdata(L, sizeof(value_t));
+        return_value_if_fail(nv != NULL, RET_OOM);
+        *nv = *v;
+        lua_pushlightuserdata(L, nv);
+      }
       break;
     }
   }
-  value_reset(v);
 
   return RET_OK;
 }
