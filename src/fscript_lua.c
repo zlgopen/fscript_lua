@@ -678,6 +678,7 @@ static int fscript_call(lua_State* L, fscript_func_t func) {
   func(fscript, &args, &result);
 
   fscript_return_to_lua(L, &result);
+  value_reset(&result);
 
   if (args.args != args_values) {
     TKMEM_FREE(args.args);
@@ -859,6 +860,8 @@ fscript_t* fscript_lua_create_ex(tk_object_t* obj, const char* code, bool_t clea
   return_value_if_fail(code != NULL, NULL);
   if (obj == NULL) {
     obj = object_default_create();
+  } else {
+    TK_OBJECT_REF(obj);
   }
   return_value_if_fail(obj != NULL, NULL);
 
@@ -887,6 +890,9 @@ fscript_t* fscript_lua_create_ex(tk_object_t* obj, const char* code, bool_t clea
   if (clean) {
     fscript_clean(fscript);
   }
+  str_reset(&str);
+  TK_OBJECT_UNREF(obj);
+
   return fscript;
 error:
   str_reset(&str);
@@ -898,6 +904,7 @@ error:
   if (L != NULL) {
     lua_close(L);
   }
+  TK_OBJECT_UNREF(obj);
 
   return NULL;
 }
