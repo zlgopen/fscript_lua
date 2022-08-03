@@ -1,0 +1,84 @@
+[
+  {
+    "type": "class",
+    "methods": [
+      {
+        "params": [
+          {
+            "type": "tk_object_t*",
+            "name": "obj",
+            "desc": "对象。"
+          },
+          {
+            "type": "const char*",
+            "name": "code",
+            "desc": "fscript代码。"
+          }
+        ],
+        "annotation": {},
+        "desc": "创建fscript对象。执行fscript_exec时，使用lua引擎执行。",
+        "name": "fscript_lua_create",
+        "return": {
+          "type": "fscript_t*",
+          "desc": "返回fscript对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "tk_object_t*",
+            "name": "obj",
+            "desc": "对象。"
+          },
+          {
+            "type": "const char*",
+            "name": "code",
+            "desc": "fscript代码。"
+          },
+          {
+            "type": "bool_t",
+            "name": "clean",
+            "desc": "是否清除fscript对象中无用的数据结构。"
+          }
+        ],
+        "annotation": {},
+        "desc": "创建fscript对象。执行fscript_exec时，使用lua引擎执行。",
+        "name": "fscript_lua_create_ex",
+        "return": {
+          "type": "fscript_t*",
+          "desc": "返回fscript对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "fscript_t*",
+            "name": "fscript",
+            "desc": "fscript对象。"
+          },
+          {
+            "type": "str_t*",
+            "name": "str",
+            "desc": "用于返回lua代码。"
+          }
+        ],
+        "annotation": {},
+        "desc": "将fscript对象转换成lua代码。",
+        "name": "fscript_to_lua",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      }
+    ],
+    "events": [],
+    "properties": [],
+    "header": "src/fscript_lua.h",
+    "desc": "用lua运行fscript",
+    "name": "fscript_lua_t",
+    "annotation": {
+      "fake": true
+    },
+    "level": 1
+  }
+]

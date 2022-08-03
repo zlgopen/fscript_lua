@@ -1,0 +1,2 @@
+name="awtk"
+print(name)

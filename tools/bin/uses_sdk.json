@@ -1,0 +1,9 @@
+{
+  "compileSDK": {
+    "awtk": {
+      "path": "/Users/jim/work/awtk-root/tkc",
+      "release_id": "",
+      "nanovg_backend": ""
+    }
+  }
+}

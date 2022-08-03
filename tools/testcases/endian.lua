@@ -1,0 +1,6 @@
+assert(is_little())
+assert((htonl(287454020) == 1144201745))
+assert((ntohl(287454020) == 1144201745))
+assert((htons(4386) == 8721))
+assert((ntohs(4386) == 8721))
+print(ntohs(4386))

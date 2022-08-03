@@ -1,0 +1,5 @@
+LIBRARY   fscript_lua
+EXPORTS
+    fscript_lua_create
+    fscript_lua_create_ex
+    fscript_to_lua
