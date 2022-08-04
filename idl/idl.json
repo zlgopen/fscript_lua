@@ -26,6 +26,58 @@
       {
         "params": [
           {
+            "type": "fscript_t*",
+            "name": "fscript",
+            "desc": "fscript对象。"
+          },
+          {
+            "type": "const char*",
+            "name": "name",
+            "desc": "对象名。"
+          },
+          {
+            "type": "tk_object_t*",
+            "name": "obj",
+            "desc": "对象。"
+          }
+        ],
+        "annotation": {},
+        "desc": "注册全局对象。",
+        "name": "fscript_lua_reg_object",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "fscript_t*",
+            "name": "fscript",
+            "desc": "fscript对象。"
+          },
+          {
+            "type": "const char*",
+            "name": "name",
+            "desc": "函数名。"
+          },
+          {
+            "type": "lua_CFunction",
+            "name": "func",
+            "desc": "函数。"
+          }
+        ],
+        "annotation": {},
+        "desc": "注册全局函数。",
+        "name": "fscript_lua_reg_func",
+        "return": {
+          "type": "ret_t",
+          "desc": "返回RET_OK表示成功，否则表示失败。"
+        }
+      },
+      {
+        "params": [
+          {
             "type": "tk_object_t*",
             "name": "obj",
             "desc": "对象。"
@@ -39,6 +91,16 @@
             "type": "bool_t",
             "name": "clean",
             "desc": "是否清除fscript对象中无用的数据结构。"
+          },
+          {
+            "type": "fscript_lua_custom_init_t",
+            "name": "on_init",
+            "desc": "初始化函数。"
+          },
+          {
+            "type": "void*",
+            "name": "on_init_ctx",
+            "desc": "初始化函数的上下文。"
           }
         ],
         "annotation": {},

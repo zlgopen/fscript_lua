@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
   code = (char*)file_read(filename, &size);
   return_value_if_fail(code != NULL, 0);
 
-  fscript = fscript_lua_create_ex(NULL, code, TRUE, tk_str_end_with(filename, ".lua"));
+  fscript = fscript_lua_create_ex(NULL, code, TRUE, tk_str_end_with(filename, ".lua"), NULL, NULL);
   if (fscript != NULL) {
     value_t v;
     fscript_exec(fscript, &v);

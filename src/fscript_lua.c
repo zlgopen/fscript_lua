@@ -19,11 +19,6 @@
  *
  */
 
-#include "../lua/lua.h"
-#include "../lua/lauxlib.h"
-#include "../lua/lualib.h"
-#include "../lua/lstate.h"
-
 #include "tkc/fscript.h"
 #include "tkc/object_default.h"
 
@@ -536,15 +531,18 @@ static int fscript_object_gc(lua_State* L) {
   return 0;
 }
 
-static void fscript_object_create_global(lua_State* L, tk_object_t* obj, const char* name) {
+static ret_t fscript_object_create_global(lua_State* L, tk_object_t* obj, const char* name) {
   tk_object_t** p = (tk_object_t**)lua_newuserdata(L, sizeof(void*));
-  *p = obj;
+  return_value_if_fail(p != NULL, RET_OOM);
 
+  *p = obj;
   tk_object_ref(obj);
   luaL_getmetatable(L, FSCRIPT_OBJECT_T);
   lua_setmetatable(L, -2);
 
   lua_setglobal(L, name);
+
+  return RET_OK;
 }
 
 static void fscript_object_init(lua_State* L, tk_object_t* obj, const char* type) {
@@ -888,10 +886,11 @@ static fscript_hooks_t* fscript_lua_hooks_create(lua_State* L) {
 }
 
 fscript_t* fscript_lua_create(tk_object_t* obj, const char* code) {
-  return fscript_lua_create_ex(obj, code, TRUE, FALSE);
+  return fscript_lua_create_ex(obj, code, TRUE, FALSE, NULL, NULL);
 }
 
-fscript_t* fscript_lua_create_ex(tk_object_t* obj, const char* code, bool_t clean, bool_t is_lua) {
+fscript_t* fscript_lua_create_ex(tk_object_t* obj, const char* code, bool_t clean, bool_t is_lua,
+  fscript_lua_custom_init_t on_init, void* on_init_ctx) {
   str_t str;
   lua_State* L = NULL;
   fscript_hooks_t* hooks = NULL;
@@ -918,18 +917,21 @@ fscript_t* fscript_lua_create_ex(tk_object_t* obj, const char* code, bool_t clea
   L = luaL_newstate();
   goto_error_if_fail(L != NULL);
 
+  hooks = fscript_lua_hooks_create(L);
+  goto_error_if_fail(hooks != NULL);
+  fscript_set_self_hooks(fscript, hooks);
+  
   luaL_openlibs(L);
   globals_init(L, fscript);
+  if (on_init != NULL) {
+    goto_error_if_fail(on_init(on_init_ctx, fscript) == RET_OK);
+  }
 
   if (luaL_loadstring(L, str.str)) {
     log_warn("%s\n", lua_tostring(L, -1));
     lua_pop(L, 1);
     goto error;
   }
-
-  hooks = fscript_lua_hooks_create(L);
-  goto_error_if_fail(hooks != NULL);
-  fscript_set_self_hooks(fscript, hooks);
 
   if (clean) {
     fscript_clean(fscript);
@@ -951,4 +953,27 @@ error:
   TK_OBJECT_UNREF(obj);
 
   return NULL;
+}
+
+ret_t fscript_lua_reg_object(fscript_t* fscript, const char* name, tk_object_t* obj) {
+  fscript_lua_hooks_t* hooks = NULL;
+  return_value_if_fail(fscript != NULL && name != NULL && obj != NULL, RET_BAD_PARAMS);
+  hooks = (fscript_lua_hooks_t*)(fscript->hooks);
+  return_value_if_fail(hooks != NULL  && hooks->hooks.on_deinit == fscript_lua_on_deinit, RET_BAD_PARAMS);
+  return_value_if_fail(hooks->L != NULL, RET_BAD_PARAMS);
+
+  return fscript_object_create_global(hooks->L, obj, name);
+}
+
+ret_t fscript_lua_reg_func(fscript_t* fscript, const char* name, lua_CFunction func) {
+  fscript_lua_hooks_t* hooks = NULL;
+  return_value_if_fail(fscript != NULL && name != NULL && func != NULL, RET_BAD_PARAMS);
+  hooks = (fscript_lua_hooks_t*)(fscript->hooks);
+  return_value_if_fail(hooks != NULL  && hooks->hooks.on_deinit == fscript_lua_on_deinit, RET_BAD_PARAMS);
+  return_value_if_fail(hooks->L != NULL, RET_BAD_PARAMS);
+
+  lua_pushcfunction(hooks->L, func);
+  lua_setglobal(hooks->L, name);
+
+  return RET_OK;
 }

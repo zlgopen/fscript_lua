@@ -53,7 +53,7 @@ static void fscript_to_lua_test(const char* name) {
   ASSERT_EQ(data != NULL, TRUE);
   return_if_fail(data != NULL);
 
-  fscript = fscript_lua_create_ex(NULL, (char*)data, FALSE, FALSE);
+  fscript = fscript_lua_create_ex(NULL, (char*)data, FALSE, FALSE, NULL, NULL);
   TKMEM_FREE(data);
 
   tk_snprintf(filename, MAX_PATH, "testcases/%s.lua", name);
@@ -273,6 +273,39 @@ TEST(fscript_lua, wbuffer3) {
 TEST(fscript_lua, for_in) {
   fscript_to_lua_test("for_in");
 }
+
 TEST(fscript_lua, time) {
   fscript_to_lua_test("time");
+}
+
+static int lua_foo(lua_State* L) {
+  lua_pushinteger(L, 123);
+
+  return 1; 
+}
+
+static ret_t my_init(void* ctx, fscript_t* fscript) {
+  fscript_lua_reg_func(fscript, "foo", lua_foo);
+
+  return RET_OK;
+}
+
+#include "tkc.h"
+
+TEST(fscript_lua, custom_init) {
+  value_t v;
+  const char* code = "flow.value=foo()\nprint(flow.value)";
+  tk_object_t* obj = object_default_create();
+  tk_object_t* flow = object_default_create();
+  tk_object_set_prop_object(obj, "flow", flow);
+
+  fscript_t* fscript = fscript_lua_create_ex(obj, code, FALSE, FALSE, my_init, NULL);
+
+  fscript_exec(fscript, &v);
+  value_reset(&v);
+  fscript_destroy(fscript);
+  ASSERT_EQ(tk_object_get_prop_int(flow, "value", 0), 123);
+
+  tk_object_unref(obj);
+  tk_object_unref(flow);
 }
