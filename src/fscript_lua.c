@@ -888,10 +888,10 @@ static fscript_hooks_t* fscript_lua_hooks_create(lua_State* L) {
 }
 
 fscript_t* fscript_lua_create(tk_object_t* obj, const char* code) {
-  return fscript_lua_create_ex(obj, code, TRUE);
+  return fscript_lua_create_ex(obj, code, TRUE, FALSE);
 }
 
-fscript_t* fscript_lua_create_ex(tk_object_t* obj, const char* code, bool_t clean) {
+fscript_t* fscript_lua_create_ex(tk_object_t* obj, const char* code, bool_t clean, bool_t is_lua) {
   str_t str;
   lua_State* L = NULL;
   fscript_hooks_t* hooks = NULL;
@@ -905,11 +905,16 @@ fscript_t* fscript_lua_create_ex(tk_object_t* obj, const char* code, bool_t clea
   return_value_if_fail(obj != NULL, NULL);
 
   str_init(&str, 1000);
-  fscript = fscript_create_ex(obj, code, TRUE);
-  goto_error_if_fail(fscript != NULL);
-  goto_error_if_fail(fscript_to_lua(fscript, &str) == RET_OK);
 
-  log_debug("lua:\n%s\n", str.str);
+  if (is_lua) {
+    fscript = fscript_create_ex(obj, "print(123)", TRUE);
+    str_set(&str, code);
+  } else {
+    fscript = fscript_create_ex(obj, code, TRUE);
+    goto_error_if_fail(fscript != NULL);
+    goto_error_if_fail(fscript_to_lua(fscript, &str) == RET_OK);
+    log_debug("lua:\n%s\n", str.str);
+  }
   L = luaL_newstate();
   goto_error_if_fail(L != NULL);
 

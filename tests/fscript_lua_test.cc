@@ -29,7 +29,7 @@ static ret_t fscript_print_log(fscript_t* fscript, fscript_args_t* args, value_t
 
   value_set_bool(v, TRUE);
   for (i = 0; i < args->size; i++) {
-    if(i > 0) {
+    if (i > 0) {
       s_log += " ";
     }
     s_log += value_str_ex(args->args + i, buff, sizeof(buff) - 1);
@@ -47,7 +47,7 @@ static void fscript_to_lua_test(const char* name) {
   fscript_t* fscript = NULL;
   char filename[MAX_PATH + 1] = {0};
 
-  tk_snprintf(filename, MAX_PATH,  "testcases/%s.js", name);
+  tk_snprintf(filename, MAX_PATH, "testcases/%s.js", name);
   log_debug("input:%s\n", filename);
   data = file_read(filename, &size);
   ASSERT_EQ(data != NULL, TRUE);
@@ -56,12 +56,12 @@ static void fscript_to_lua_test(const char* name) {
   fscript = fscript_lua_create_ex(NULL, (char*)data, FALSE, FALSE);
   TKMEM_FREE(data);
 
-  tk_snprintf(filename, MAX_PATH,  "testcases/%s.lua", name);
+  tk_snprintf(filename, MAX_PATH, "testcases/%s.lua", name);
   data = file_read(filename, &size);
   ASSERT_EQ(data != NULL, TRUE);
 
   str_init(&str, 1000);
-  fscript_to_lua(fscript, &str); 
+  fscript_to_lua(fscript, &str);
 
   assert_str_eq(str.str, (char*)data);
   TKMEM_FREE(data);
@@ -73,9 +73,9 @@ static void fscript_to_lua_test(const char* name) {
   fscript_exec(fscript, &v);
   value_reset(&v);
 
-  tk_snprintf(filename, MAX_PATH,  "testcases/%s.log", name);
+  tk_snprintf(filename, MAX_PATH, "testcases/%s.log", name);
   data = file_read(filename, &size);
-  if(data != NULL) {
+  if (data != NULL) {
     assert_str_eq(s_log.c_str(), (char*)data);
   } else {
     log_debug("log:\n%s\n", s_log.c_str());
@@ -145,7 +145,7 @@ TEST(fscript_lua, break) {
   fscript_to_lua_test("break");
 }
 
-TEST(fscript_lua, return) {
+TEST(fscript_lua, return ) {
   fscript_to_lua_test("return");
 }
 
@@ -238,7 +238,7 @@ TEST(fscript_lua, stream_file1) {
   fscript_to_lua_test("stream_file1");
 }
 
-TEST(fscript_lua, typed_array) { 
+TEST(fscript_lua, typed_array) {
   fscript_to_lua_test("typed_array");
 }
 

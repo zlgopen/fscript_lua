@@ -55,7 +55,7 @@ fscript_t* fscript_lua_create(tk_object_t* obj, const char* code);
  *
  * @return {fscript_t*} 返回fscript对象。
  */
-fscript_t* fscript_lua_create_ex(tk_object_t* obj, const char* code, bool_t clean);
+fscript_t* fscript_lua_create_ex(tk_object_t* obj, const char* code, bool_t clean, bool_t is_lua);
 
 /**
  * @method fscript_to_lua
@@ -70,4 +70,3 @@ ret_t fscript_to_lua(fscript_t* fscript, str_t* str);
 END_C_DECLS
 
 #endif /*TK_FSCRIPT_LUA*/
-
