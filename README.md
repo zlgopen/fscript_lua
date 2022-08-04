@@ -51,4 +51,30 @@ scons LINUX_FB=true
 ./bin/runFScript testcases/array2.js
 ```
 
+## 性能对比
+
+* 直接用 fscript 运行
+
+```
+../tkc/bin/runFScript @testcases/time.js
+```
+
+* 使用 lua 引擎运行
+
+```
+./bin/runFScript testcases/time.js
+```
+
+* 直接运行 lua 代码
+
+```
+./bin/runFScript testcases/time.lua
+```
+
+> 总的来说，
+
+* 脚本本身，比如表达式计算、条件和循环等，加速之后速度可以快一个到两个数量级。
+
+* 调用原生函数，则性能有微小损失，主要是参数和返回值的数据类型转换。
+
 > 本文以 Linux/MacOS 为例，Windows 可能会微妙差异，请酌情处理。
