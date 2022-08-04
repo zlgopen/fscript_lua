@@ -22,6 +22,7 @@ assert(ostream_tell(a), 72)
 
 assert(ostream_write_double(a, 1, 2) == 16)
 assert(ostream_tell(a), 88)
+assert(ostream_flush(a))
 
 a = istream_file_create("test.bin", "rb")
 assert(istream_read_uint8(a)==1)
