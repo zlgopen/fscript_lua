@@ -18,4 +18,6 @@ assert((1<<2) == 4)
 assert((1<<8) == 256)
 assert(((0xf0112233 >> 24) & 0xff)  == 0xf0)
 
+print(~(0xf0) & 0xff)
+print((0xf0 | 0x0f) & 0xff)
 print(1)
