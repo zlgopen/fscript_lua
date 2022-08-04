@@ -205,8 +205,6 @@ static const char* s_2ops[] = {"+", "-",  "=",  "*", "/",  "||", "&&",
                                "<", "<=", "==", ">", ">=", "!=", "%"};
 static const char* s_2ops_to[] = {"+", "-",  "=",  "*", "/",  "or", "and",
                                   "<", "<=", "==", ">", ">=", "~=", "%"};
-static const char* s_1ops[] = {};
-static const char* s_1ops_to[] = {};
 
 static const char* map_to(const char* name, const char** from, const char** to, uint32_t size) {
   uint32_t i = 0;
@@ -389,11 +387,6 @@ static ret_t fscript_call_to_lua(fscript_func_call_t* call, str_t* str, uint32_t
   if (new_name != NULL) {
     bool_t group = !tk_str_eq(new_name, "=");
     return fscript_2ops_to_lua(name, new_name, call->args.args, call->args.args + 1, str, group);
-  }
-
-  new_name = map_to(name, s_1ops, s_1ops_to, ARRAY_SIZE(s_1ops));
-  if (new_name != NULL) {
-    return fscript_1ops_to_lua(new_name, call->args.args, str, TRUE);
   }
 
   if (tk_str_eq(name, "if")) {

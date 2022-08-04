@@ -7,6 +7,22 @@
 using std::string;
 string s_log;
 
+static void assert_str_eq(const char* str1, const char* str2) {
+  str_t s1;
+  str_t s2;
+  str_init(&s1, 0);
+  str_init(&s2, 0);
+  str_set(&s1, str1);
+  str_replace(&s1, "\r\n", "\n");
+  str_set(&s2, str2);
+  str_replace(&s2, "\r\n", "\n");
+
+  ASSERT_STREQ(s1.str, s2.str);
+
+  str_reset(&s1);
+  str_reset(&s2);
+}
+
 static ret_t fscript_print_log(fscript_t* fscript, fscript_args_t* args, value_t* v) {
   uint32_t i = 0;
   char buff[64];
@@ -47,7 +63,7 @@ static void fscript_to_lua_test(const char* name) {
   str_init(&str, 1000);
   fscript_to_lua(fscript, &str); 
 
-  ASSERT_STREQ(str.str, (char*)data);
+  assert_str_eq(str.str, (char*)data);
   TKMEM_FREE(data);
   str_reset(&str);
 
@@ -60,7 +76,7 @@ static void fscript_to_lua_test(const char* name) {
   tk_snprintf(filename, MAX_PATH,  "testcases/%s.log", name);
   data = file_read(filename, &size);
   if(data != NULL) {
-    ASSERT_STREQ(s_log.c_str(), (char*)data);
+    assert_str_eq(s_log.c_str(), (char*)data);
   } else {
     log_debug("log:\n%s\n", s_log.c_str());
   }
