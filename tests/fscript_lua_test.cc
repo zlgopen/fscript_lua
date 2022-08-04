@@ -278,6 +278,10 @@ TEST(fscript_lua, time) {
   fscript_to_lua_test("time");
 }
 
+TEST(fscript_lua, get) {
+  fscript_to_lua_test("get");
+}
+
 static int lua_foo(lua_State* L) {
   lua_pushinteger(L, 123);
 

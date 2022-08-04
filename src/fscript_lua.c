@@ -421,8 +421,15 @@ static ret_t fscript_call_to_lua(fscript_func_call_t* call, str_t* str, uint32_t
     return fscript_call_to_lua_expr(call, str, level);
   }
 
-  if (tk_str_eq(name, "unset") || tk_str_eq(name, "set")) {
+  if (tk_str_eq(name, "unset") || tk_str_eq(name, "get")) {
     str_append_more(str, name, "(\"", value_id(call->args.args), "\")", NULL);
+    return RET_OK;
+  }
+  
+  if (tk_str_eq(name, "set")) {
+    str_append_more(str, name, "(\"", value_id(call->args.args), "\", " , NULL);
+    fscript_arg_to_lua(call->args.args+1, str, 0);
+    str_append(str, ")");
     return RET_OK;
   }
 
