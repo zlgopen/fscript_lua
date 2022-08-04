@@ -17,7 +17,8 @@
  * lua 不支持 continue。可选的解决方案有几个：
     * 扩展 lua 支持 continue
     * 如果存在 continue 仍然使用 fscript 执行。
- * lua 的数据类型比较单一，比如缺少 64 位整数的支持。 极端情况下，fscript 的执行结果和 lua 的执行结果可能有差异。
+ * lua 的数据类型比较单一，比如缺少 64 位整数的支持。
+ * require 目前不支持用 lua 运行。
 
 ## 准备
 
