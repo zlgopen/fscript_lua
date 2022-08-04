@@ -53,7 +53,7 @@ static void fscript_to_lua_test(const char* name) {
   ASSERT_EQ(data != NULL, TRUE);
   return_if_fail(data != NULL);
 
-  fscript = fscript_lua_create_ex(NULL, (char*)data, FALSE);
+  fscript = fscript_lua_create_ex(NULL, (char*)data, FALSE, FALSE);
   TKMEM_FREE(data);
 
   tk_snprintf(filename, MAX_PATH,  "testcases/%s.lua", name);
@@ -272,4 +272,7 @@ TEST(fscript_lua, wbuffer3) {
 
 TEST(fscript_lua, for_in) {
   fscript_to_lua_test("for_in");
+}
+TEST(fscript_lua, time) {
+  fscript_to_lua_test("time");
 }
