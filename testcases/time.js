@@ -15,5 +15,5 @@ while(i < 10000) {
   crc32("1234abcd")
   i = i + 1
 }
-var cost = time_now_ms() - start;
+cost = time_now_ms() - start;
 print(cost)

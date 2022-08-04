@@ -18,5 +18,5 @@ do
   crc32("1234abcd")
   i = (i + 1)
 end
-local cost = (time_now_ms() - start)
+cost = (time_now_ms() - start)
 print(cost)
