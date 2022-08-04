@@ -457,6 +457,27 @@ tk_object_t* object_value_create(value_t* v) {
 }
 ```
 
+### 2.4 扩展函数
+
+> 需要将 fscript 的扩展函数注册到 lua 中。
+
+示例
+
+```c
+static int lua_call_min(lua_State* L) { 
+  static fscript_func_t func = NULL;
+  if (func == NULL) {
+    fscript_t* fscript = fscript_lua_get_fscript(L);
+    func = fscript_find_func(fscript, "min", sizeof("min")-1);
+  }
+  return fscript_call(L, func);
+}
+
+  lua_pushcfunction(L, lua_call_min);
+  lua_setglobal(L, "min");
+  
+```
+
 ## 3. 效果
 
 * 原生函数调用，性能有微小损失。
